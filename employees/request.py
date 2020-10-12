@@ -107,3 +107,40 @@ def update_employee(id, new_employee):
             # Found the location. Update the value.
             EMPLOYEES[index] = new_employee
             break
+
+def get_employees_by_location(location):
+
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.address,
+            c.location_id
+        from Employee c
+        WHERE c.location_id = ?
+        """, ( location, ))
+
+        # Initialize an empty list to hold all employee representations
+        employees = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an employee instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # employee class above.
+            employee = Employee(row['id'], row['name'], row['address'],
+                            row['location_id'])
+
+            employees.append(employee.__dict__)
+
+    # Use `json` package to properly serialize list as JSON
+    return json.dumps(employees)
