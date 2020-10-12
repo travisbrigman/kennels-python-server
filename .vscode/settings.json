@@ -15,5 +15,14 @@
         "titleBar.inactiveBackground": "#3ba0fd99",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#3ba0fd"
+    "peacock.color": "#3ba0fd",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Python Kennels",
+            "database": "${workspaceFolder:python-server}/kennel.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }

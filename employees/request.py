@@ -1,29 +1,46 @@
-EMPLOYEES = [
-    {
-      "name": "Travis",
-      "locationId": 1,
-      "animalId": 2,
-      "id": 5
-    },
-    {
-      "name": "Sorrel",
-      "locationId": 2,
-      "animalId": 3,
-      "id": 6
-    },
-    {
-      "name": "Saoirse",
-      "locationId": 2,
-      "animalId": 5,
-      "id": 7
-    }
-]
+import json
+import sqlite3
 
+from models import Employee
 
 def get_all_employees():
-    return EMPLOYEES
+    # Open a connection to the database
+    with sqlite3.connect("./kennel.db") as conn:
 
-    # Function with a single parameter
+        # Just use these. It's a Black Box.
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.location_id
+        FROM employee a
+        """)
+
+        # Initialize an empty list to hold all employee representations
+        employees = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an employee instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # employee class above.
+            employee = Employee(row['id'], row['name'], row['address'],
+                            row['location_id'])
+
+            employees.append(employee.__dict__)
+
+    # Use `json` package to properly serialize list as JSON
+    return json.dumps(employees)
 
 def get_single_employee(id):
     # Variable to hold the found employee, if it exists
