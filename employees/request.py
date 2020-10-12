@@ -43,18 +43,30 @@ def get_all_employees():
     return json.dumps(employees)
 
 def get_single_employee(id):
-    # Variable to hold the found employee, if it exists
-    requested_employee = None
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    # Iterate the employees list above. Very similar to the
-    # for..of loops you used in JavaScript.
-    for employee in EMPLOYEES:
-        # Dictionaries in Python use [] notation to find a key
-        # instead of the dot notation that JavaScript used.
-        if employee["id"] == id:
-            requested_employee = employee
+        # Use a ? parameter to inject a variable's value
+        # into the SQL statement.
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.location_id
+        FROM employee a
+        WHERE a.id = ?
+        """, ( id, ))
 
-    return requested_employee
+        # Load the single result into memory
+        data = db_cursor.fetchone()
+
+        # Create an employee instance from the current row
+        employee = Employee(data['id'], data['name'], data['address'],
+                        data['location_id'])
+
+        return json.dumps(employee.__dict__)
 
 def create_employee(employee):
     # Get the id value of the last employee in the list
