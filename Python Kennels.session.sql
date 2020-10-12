@@ -60,5 +60,10 @@ INSERT INTO `Animal` VALUES (null, "Doodles", "Kennel", "Poodle", 3, 1);
 INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
 
 
-SELECT * FROM employee
+SELECT
+    a.id,
+    a.name,
+    a.address
+FROM location a
+WHERE a.id = 2
 

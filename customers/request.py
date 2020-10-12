@@ -3,31 +3,6 @@ import sqlite3
 
 from models import Customer
 
-# CUSTOMERS = [
-#     {
-#       "id": 1,
-#       "name": "Hannah Hall",
-#       "address": "7002 Chestnut Ct"
-#     },
-#     {
-#       "id": 2,
-#       "name": "David Johnson",
-#       "address": "124 Lynwood Ct"
-#     },
-#     {
-#       "id": 3,
-#       "name": "Lee LaVigne",
-#       "address": "11011 Baldwin Ave"
-#     },
-#     {
-#       "email": "travis1000@icloud.com",
-#       "password": "123",
-#       "name": "Travis Brigman",
-#       "id": 4
-#     }
-# ]
-
-
 def get_all_customers():
     # Open a connection to the database
     with sqlite3.connect("./kennel.db") as conn:
