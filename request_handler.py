@@ -77,6 +77,11 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_employee(id)}"
                 else:
                     response = f"{get_all_employees()}"
+            elif resource == "locations":
+                if id is not None:
+                    response = f"{get_single_location(id)}"
+                else:
+                    response = f"{get_all_locations()}"
 
         # Response from parse_url() is a tuple with 3
         # items in it, which means the request was for
@@ -183,5 +188,12 @@ def main():
     port = 8088
     HTTPServer((host, port), HandleRequests).serve_forever()
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
+
+def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With')
+        self.end_headers()
