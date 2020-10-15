@@ -63,3 +63,14 @@ INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
 
 INSERT INTO `Animal` VALUES (null, "Lilu", "Kennel", "Blue Lacey", 2, 2);
 
+        SELECT
+            a.id,
+            a.name,
+            a.address,
+            a.location_id,
+            l.name location_name,
+            l.address
+        FROM Employee a
+        JOIN Location l ON l.id = a.location_id
+        WHERE a.id = 1
+

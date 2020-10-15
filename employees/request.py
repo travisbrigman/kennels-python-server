@@ -2,6 +2,7 @@ import json
 import sqlite3
 
 from models import Employee
+from models import Location
 
 def get_all_employees():
     # Open a connection to the database
@@ -17,9 +18,14 @@ def get_all_employees():
             a.id,
             a.name,
             a.address,
-            a.location_id
+            a.location_id,
+            l.name location_name,
+            l.address location_address
         FROM employee a
+        JOIN Location l
+            on l.id = a.location_id
         """)
+
 
         # Initialize an empty list to hold all employee representations
         employees = []
@@ -36,6 +42,10 @@ def get_all_employees():
             # employee class above.
             employee = Employee(row['id'], row['name'], row['address'],
                             row['location_id'])
+            
+            location = Location("", row['location_name'], row['location_address'])
+            
+            employee.location = location.__dict__
 
             employees.append(employee.__dict__)
 
@@ -54,8 +64,11 @@ def get_single_employee(id):
             a.id,
             a.name,
             a.address,
-            a.location_id
-        FROM employee a
+            a.location_id,
+            l.name location_name,
+            l.address location_address
+        FROM Employee a
+        JOIN Location l ON l.id = a.location_id
         WHERE a.id = ?
         """, ( id, ))
 
@@ -65,6 +78,9 @@ def get_single_employee(id):
         # Create an employee instance from the current row
         employee = Employee(data['id'], data['name'], data['address'],
                         data['location_id'])
+        location = Location("", data['location_name'], data['location_address'])
+            
+        employee.location = location.__dict__
 
         return json.dumps(employee.__dict__)
 

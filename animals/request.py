@@ -1,7 +1,10 @@
+from models import Customer
+from models import Location
+from models import Animal
 import sqlite3
 import json
 
-from models import Animal
+
 
 def get_all_animals():
     # Open a connection to the database
@@ -18,9 +21,13 @@ def get_all_animals():
             a.name,
             a.breed,
             a.status,
+            a.location_id,
             a.customer_id,
-            a.location_id
-        FROM animal a
+            l.name location_name,
+            l.address location_address
+        FROM Animal a
+        JOIN Location l
+            ON l.id = a.location_id
         """)
 
         # Initialize an empty list to hold all animal representations
@@ -36,9 +43,12 @@ def get_all_animals():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Animal class above.
-            animal = Animal(row['id'], row['name'], row['breed'],
-                            row['status'], row['location_id'],
+            animal = Animal(row['id'], row['name'], row['status'],
+                            row['breed'], row['location_id'],
                             row['customer_id'])
+            location = Location("", row['location_name'], row['location_address'])
+
+            animal.location = location.__dict__
 
             animals.append(animal.__dict__)
 
@@ -56,12 +66,17 @@ def get_single_animal(id):
         db_cursor.execute("""
         SELECT
             a.id,
-            a.name,
+            a.name animal_name,
             a.status,
             a.breed,
             a.customer_id,
-            a.location_id
+            a.location_id,
+            c.name customer_name,
+            l.name location_name
+            l.address
         FROM animal a
+        JOIN Customer c ON c.id = a.customer_id
+        JOIN Location l ON l.id = a.location_id
         WHERE a.id = ?
         """, ( id, ))
 
@@ -69,9 +84,14 @@ def get_single_animal(id):
         data = db_cursor.fetchone()
 
         # Create an animal instance from the current row
-        animal = Animal(data['id'], data['name'],data['status'], data['breed'],
-                        data['location_id'], data['customer_id']
-                        )
+        animal = Animal(data['id'], data['animal_name'],data['status'], data['breed'],
+                        data['location_id'], data['customer_id'])
+
+        location = Location("",data['location_name'], row['location_address'])
+        animal.location = location.__dict__
+
+        customer = Customer("", data['customer_name'], "", "", "")
+        animal.customer = customer.__dict__
 
         return json.dumps(animal.__dict__)
 
@@ -110,13 +130,13 @@ def update_animal(id, new_animal):
         UPDATE Animal
             SET
                 name = ?,
-                breed = ?,
                 status = ?,
+                breed = ?,
                 location_id = ?,
                 customer_id = ?
         WHERE id = ?
-        """, (new_animal['name'], new_animal['species'],
-              new_animal['status'], new_animal['location_id'],
+        """, (new_animal['name'], new_animal['status'],
+              new_animal['breed'], new_animal['location_id'],
               new_animal['customer_id'], id, ))
 
         # Were any rows affected?
@@ -158,8 +178,8 @@ def get_animals_by_location(location):
         for row in dataset:
 
         # Create an animal instance from the current row
-            animal = Animal(row['id'], row['name'], row['breed'],
-                            row['status'], row['customer_id'], row['location_id'])
+            animal = Animal(row['id'], row['name'], row['status'],
+                            row['breed'], row['customer_id'], row['location_id'])
 
             animals.append(animal.__dict__)
 
@@ -194,8 +214,8 @@ def get_animals_by_status(treatment):
         for row in dataset:
 
         # Create an animal instance from the current row
-            animal = Animal(row['id'], row['name'], row['breed'],
-                            row['status'], row['customer_id'], row['location_id'])
+            animal = Animal(row['id'], row['name'], row['status'],
+                            row['breed'], row['customer_id'], row['location_id'])
 
             animals.append(animal.__dict__)
 
