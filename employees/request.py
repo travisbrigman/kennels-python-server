@@ -63,7 +63,6 @@ def get_single_employee(id):
         SELECT
             a.id,
             a.name,
-            a.address,
             a.location_id,
             l.name location_name,
             l.address location_address
@@ -76,7 +75,7 @@ def get_single_employee(id):
         data = db_cursor.fetchone()
 
         # Create an employee instance from the current row
-        employee = Employee(data['id'], data['name'], data['address'],
+        employee = Employee(data['id'], data['name'], "",
                         data['location_id'])
         location = Location("", data['location_name'], data['location_address'])
             
